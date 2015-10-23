@@ -13,12 +13,23 @@ module Data =
     member this.Region with get() = regionId
 
   let cities : ArrayList =
-    new ArrayList([| new City("Новосибирск", 1);
+    new ArrayList([| new City("Москва", 32);    
+                     new City("Санкт-Петербург", 38);
+                     new City("Новосибирск", 1);
                      new City("Екатеринбург", 9);
-                     new City("Москва", 32);
-                     new City("Санкт-Петербург", 38) |])
+                     new City("Нижний Новгород", 19);
+                     new City("Казань", 21);
+                     new City("Самара", 18);
+                     new City("Челябинск", 15);
+                     new City("Омск", 2);
+                     new City("Ростов-на-Дону", 24);
+                     new City("Уфа", 17);
+                     new City("Красноярск", 7);
+                     new City("Пермь", 16);
+                     new City("Волгоград", 33);
+                     new City("Воронеж", 31) |])
 
-  let key = "asdfsdf"
+  let key = "rusazx2220"
   let fields = "items.adm_div,items.contact_groups,items.flags,items.address,items.name_ex,items.external_content,items.org"
   let url = "http://catalog.api.2gis.ru/2.0/catalog/branch/search"
 
