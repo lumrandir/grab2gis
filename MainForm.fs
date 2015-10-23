@@ -30,9 +30,15 @@ type MainForm() as form =
     saveFile.Filter   <- "Excel 2007 files (*.xlsx)|*.xlsx"
     saveFile.InitialDirectory <- Directory.GetCurrentDirectory()
     if saveFile.ShowDialog(form) = DialogResult.OK
-      then saveExcel (fetch query regionId) saveFile.FileName
+      then 
+        match (fetch query regionId) with 
+          | Some(result) -> saveExcel result saveFile.FileName
+          | None         -> do this.showErrorDialog
       //then saveExcel [||] saveFile.FileName
       else ()
+      
+  member this.showErrorDialog =
+    MessageBox.Show("Не удалось получить результаты. Возможно, ключ доступа устарел.") |> ignore
 
   member this.InitializeForm =
     this.Width           <- 300
