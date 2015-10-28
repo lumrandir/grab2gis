@@ -2,3 +2,5 @@
 *.bat
 .vs
 *.exe
+*.swp
+key.txt

@@ -5,7 +5,7 @@ open System.Windows.Forms
 open System.Drawing
 open System.IO
 open Data
-open Worksheet
+open ExcelWorksheet
 
 type MainForm() as form =
   inherit Form()
@@ -16,9 +16,18 @@ type MainForm() as form =
   let cityCombo  = new ComboBox(Location = new Point(10, 85),
                                 Size = new Size(260, 100), ValueMember = "Region",
                                 DisplayMember = "Name", DataSource = cities)
-  let processBtn = new Button(Location = new Point(190, 130),
+  let processBtn = new Button(Location = new Point(190, 165),
                               Size = new Size(80, 30), Text = "Граб")
-  let debugLabel = new Label(Text = "", Location = new Point(10, 160))
+  let keyLabel   = new Label(Text = "Ключ", Location = new Point(10, 110))
+  let keyText    = new TextBox(Location = new Point(10, 135), Size = new Size(260, 100))
+
+  let savedKey   =
+    try
+      use sr = new StreamReader("key.txt")
+      sr.ReadLine()
+    with
+      | _ -> "<couldn't read a key>"
+      
 
   do form.InitializeForm
 
@@ -26,15 +35,17 @@ type MainForm() as form =
     let query    = queryText.Text
     let regionId = unbox<int> cityCombo.SelectedValue
     let saveFile = new SaveFileDialog()
+    let key      = keyText.Text
+    use wr = new StreamWriter("key.txt", false)
+    wr.WriteLine key
     saveFile.FileName <- query
     saveFile.Filter   <- "Excel 2007 files (*.xlsx)|*.xlsx"
     saveFile.InitialDirectory <- Directory.GetCurrentDirectory()
     if saveFile.ShowDialog(form) = DialogResult.OK
       then 
-        match (fetch query regionId) with 
+        match fetch query regionId key with 
           | Some(result) -> saveExcel result saveFile.FileName
           | None         -> do this.showErrorDialog
-      //then saveExcel [||] saveFile.FileName
       else ()
       
   member this.showErrorDialog =
@@ -46,6 +57,7 @@ type MainForm() as form =
     this.Text            <- "Скорограббер"
     this.MaximizeBox     <- false
     this.FormBorderStyle <- FormBorderStyle.FixedDialog
+    keyText.Text         <- savedKey
     processBtn.Click.Add(fun _ -> do form.onProcessBtnClick)
     this.Controls.AddRange(
       [| (queryLabel :> Control);
@@ -53,5 +65,6 @@ type MainForm() as form =
          (cityLabel  :> Control);
          (cityCombo  :> Control);
          (processBtn :> Control);
-         (debugLabel :> Control)
+         (keyLabel   :> Control);
+         (keyText    :> Control)
       |] )
